@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>정평중 생활중국어 - 여행 회화 종합 연습 & 모둠전</title>
+<style>
+  body { font-family: 'Malgun Gothic', sans-serif; background:#f4f6fb; margin:0; padding:20px; }
+  h1 { text-align:center; color:#2b3a67; }
+  .tabs { display:flex; justify-content:center; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+  .tab-btn { padding:10px 18px; border:none; border-radius:20px; background:#dfe6f3; cursor:pointer; font-weight:bold; }
+  .tab-btn.active { background:#2b3a67; color:white; }
+  .category { display:none; max-width:700px; margin:0 auto; }
+  .category.active { display:block; }
+  .card {
+    background:white; border-radius:16px; padding:25px; margin:15px 0;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08); text-align:center; position:relative;
+  }
+  .cn { font-size:24px; font-weight:bold; color:#1a1a1a; cursor:pointer; }
+  .pinyin { font-size:16px; color:#5a6b9c; margin-top:6px; cursor:pointer; }
+  .kr { display:none; font-size:18px; color:#d1495b; margin-top:12px; font-weight:bold; }
+  .card.show .kr { display:block; }
+  .blank-note { display:inline-block; margin-top:8px; font-size:12px; background:#fff3cd; color:#8a6d00; padding:3px 10px; border-radius:10px; }
+  .btn-row { margin-top:14px; display:flex; justify-content:center; gap:8px; flex-wrap:wrap; }
+  .speak-btn, .toggle-btn { padding:8px 14px; border:none; border-radius:20px; cursor:pointer; font-size:14px; font-weight:bold; }
+  .speak-btn { background:#4caf7d; color:white; }
+  .speak-btn:hover { background:#3d9c69; }
+  .toggle-btn { background:#2b3a67; color:white; }
+  .toggle-btn:hover { background:#1e2a4d; }
+  .count-badge { position:absolute; top:12px; right:14px; background:#ffd166; color:#5a4200; font-size:12px; font-weight:bold; padding:4px 10px; border-radius:12px; }
+  .extra-box { margin-top:18px; padding-top:14px; border-top:1px dashed #ccc; text-align:left; }
+  .extra-title { font-size:13px; color:#999; margin-bottom:8px; font-weight:bold; }
+  .extra-item { display:flex; justify-content:space-between; align-items:center; background:#f7f9fc; padding:8px 12px; border-radius:10px; margin-bottom:6px; font-size:14px; }
+  .extra-item .ex-pinyin { color:#888; font-size:12px; margin-left:6px; }
+  .extra-item button { background:#4caf7d; color:white; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; }
+  .progress { text-align:center; margin-bottom:10px; color:#555; }
+  .reset-row { text-align:center; margin-top:20px; }
+  .reset-row button { background:#aaa; color:white; border:none; padding:8px 16px; border-radius:10px; cursor:pointer; }
+  .total-stat { text-align:center; margin:15px 0; font-weight:bold; color:#2b3a67; font-size:16px; }
+
+  .speed-panel {
+    max-width:700px; margin:0 auto 15px auto; background:white; border-radius:14px;
+    padding:14px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);
+    display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;
+  }
+  .speed-panel span.label { font-weight:bold; color:#2b3a67; }
+  .speed-btn { padding:8px 16px; border:2px solid #2b3a67; background:white; color:#2b3a67; border-radius:20px; cursor:pointer; font-weight:bold; font-size:14px; }
+  .speed-btn.active { background:#2b3a67; color:white; }
+  .note-box { max-width:700px; margin:0 auto 20px auto; background:#fff8e6; border:1px solid #ffe0a3; border-radius:12px; padding:14px 18px; font-size:13px; color:#7a5c00; }
+  .note-box b { color:#5a4200; }
+
+  .quiz-box { max-width:700px; margin:20px auto; background:white; padding:25px; border-radius:16px; box-shadow:0 4px 10px rgba(0,0,0,0.08); }
+  .quiz-question-cn { font-size:22px; font-weight:bold; color:#1a1a1a; text-align:center; }
+  .quiz-pinyin { color:#5a6b9c; text-align:center; margin-bottom:20px; }
+  .options { display:flex; flex-direction:column; gap:10px; }
+  .option-btn { padding:14px; border:2px solid #dfe6f3; background:#fafbfd; border-radius:12px; cursor:pointer; font-size:15px; text-align:left; transition:0.15s; }
+  .option-btn:hover { background:#eef1fa; }
+  .option-btn.correct { background:#d7f5df; border-color:#4caf7d; font-weight:bold; }
+  .option-btn.wrong { background:#fbdada; border-color:#d1495b; font-weight:bold; }
+  .option-btn.disabled { pointer-events:none; opacity:0.85; }
+  .quiz-box button.nav-btn { padding:8px 16px; border:none; background:#2b3a67; color:white; border-radius:8px; cursor:pointer; margin-top:16px; }
+  .result { margin-top:12px; font-weight:bold; text-align:center; }
+  .correct-text { color:green; }
+  .wrong-text { color:red; }
+  .score { text-align:center; font-size:18px; margin-top:15px; color:#2b3a67; font-weight:bold; }
+
+  /* ===== 모둠전 스타일 ===== */
+  .setup-box { max-width:700px; margin:20px auto; background:white; padding:25px; border-radius:16px; box-shadow:0 4px 10px rgba(0,0,0,0.08); text-align:center; }
+  .setup-box input[type=number] { width:60px; padding:6px; border-radius:8px; border:1px solid #ccc; text-align:center; }
+  .team-name-row { display:flex; gap:8px; align-items:center; justify-content:center; margin:8px 0; }
+  .team-name-row input[type=text] { flex:1; max-width:260px; padding:8px; border-radius:8px; border:1px solid #ccc; }
+  .team-color-dot { width:18px; height:18px; border-radius:50%; display:inline-block; }
+  .big-btn { padding:12px 24px; background:#2b3a67; color:white; border:none; border-radius:12px; font-size:16px; font-weight:bold; cursor:pointer; margin-top:10px; }
+  .big-btn:hover { background:#1e2a4d; }
+
+  .scoreboard { max-width:900px; margin:0 auto 20px auto; display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+  .team-card {
+    background:white; border-radius:16px; padding:16px 20px; min-width:140px; text-align:center;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08); border-top:6px solid #ccc; transition:transform 0.2s;
+  }
+  .team-card.turn { box-shadow:0 0 0 4px #ffd166, 0 4px 10px rgba(0,0,0,0.08); }
+  .team-card .t-name { font-weight:bold; font-size:15px; margin-bottom:6px; }
+  .team-card .t-score { font-size:28px; font-weight:bold; color:#2b3a67; }
+  .team-card.pop { animation: popScore 0.6s ease; }
+  @keyframes popScore {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.25); }
+    60% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+  .turn-badge { display:inline-block; margin-top:6px; font-size:11px; background:#ffd166; color:#5a4200; padding:2px 8px; border-radius:10px; }
+
+  .game-arena { max-width:700px; margin:0 auto; background:white; border-radius:16px; padding:25px; box-shadow:0 4px 10px rgba(0,0,0,0.08); text-align:center; }
+  .timer-circle {
+    width:90px; height:90px; border-radius:50%; border:6px solid #2b3a67; margin:0 auto 14px auto;
+    display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:bold; color:#2b3a67;
+  }
+  .timer-circle.warning { border-color:#d1495b; color:#d1495b; animation: pulse 0.6s infinite; }
+  @keyframes pulse { 0%{transform:scale(1);} 50%{transform:scale(1.08);} 100%{transform:scale(1);} }
+  .arena-question { font-size:26px; font-weight:bold; margin:10px 0; }
+  .arena-pinyin { color:#5a6b9c; margin-bottom:16px; }
+  .arena-status { font-size:15px; margin:10px 0; font-weight:bold; }
+  .status-turn { color:#2b3a67; }
+  .status-steal { color:#d1495b; }
+  .arena-btn-row { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:16px; }
+  .arena-btn { padding:12px 18px; border:none; border-radius:12px; font-weight:bold; cursor:pointer; font-size:14px; }
+  .btn-correct { background:#4caf7d; color:white; }
+  .btn-wrong { background:#d1495b; color:white; }
+  .btn-steal { background:#ffb703; color:#5a4200; }
+  .btn-next { background:#2b3a67; color:white; }
+  .steal-select { display:none; margin-top:14px; flex-wrap:wrap; gap:8px; justify-content:center; }
+  .steal-select button { padding:8px 14px; border-radius:20px; border:2px solid #ffb703; background:#fff8e6; cursor:pointer; font-weight:bold; }
+</style>
+</head>
+<body>
+
+<h1>🇨🇳 정평중 생활중국어 - 여행 회화 종합 연습 & 모둠전</h1>
+
+<div class="note-box">
+  <b>📌 학습 안내</b><br>
+  ① 🎚️ 발음 속도를 0.5배~1.5배 중 골라서 들어보세요.<br>
+  ② "有点儿(yǒudiǎnr)"처럼 儿化音(얼화음)이 들어간 단어는 기계 음성이 다소 어색할 수 있어요. 선생님 발음이나 사전 앱도 함께 들어보세요!<br>
+  ③ "_____" 빈칸이 있는 문장(예: 我叫_____, 我想去_____)은 <b>자신의 이름, 가고 싶은 장소 등을 각자 넣어서</b> 연습하세요. 퀴즈에서는 "각자의 표현 넣기"로 표시됩니다.
+</div>
+
+<div class="total-stat" id="total-stat">전체 연습 횟수: 0회</div>
+
+<div class="speed-panel">
+  <span class="label">🎚️ 발음 속도:</span>
+  <button class="speed-btn" data-speed="0.5" onclick="setSpeed(0.5, this)">0.5배 (느리게)</button>
+  <button class="speed-btn active" data-speed="1" onclick="setSpeed(1, this)">1배 (보통)</button>
+  <button class="speed-btn" data-speed="1.5" onclick="setSpeed(1.5, this)">1.5배 (빠르게)</button>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('traffic')">🚕 교통·길찾기</button>
+  <button class="tab-btn" onclick="showTab('food')">🍜 음식 주문</button>
+  <button class="tab-btn" onclick="showTab('shopping')">🛍️ 물건 사기</button>
+  <button class="tab-btn" onclick="showTab('vlog')">🎬 브이로그 표현</button>
+  <button class="tab-btn" onclick="showTab('quiz')">✏️ 개인 퀴즈</button>
+  <button class="tab-btn" onclick="showTab('team')">🏆 모둠전</button>
+</div>
+
+<div id="traffic" class="category active"></div>
+<div id="food" class="category"></div>
+<div id="shopping" class="category"></div>
+<div id="vlog" class="category"></div>
+
+<!-- 개인 퀴즈 -->
+<div id="quiz" class="category">
+  <div class="quiz-box">
+    <div class="quiz-question-cn" id="quiz-question">퀴즈를 시작하려면 아래 버튼을 누르세요!</div>
+    <div class="quiz-pinyin" id="quiz-pinyin"></div>
+    <div class="options" id="quiz-options"></div>
+    <div class="result" id="quiz-result"></div>
+    <div class="score" id="quiz-score">맞춘 개수: 0 / 0</div>
+    <div style="text-align:center;">
+      <button class="nav-btn" onclick="initQuiz()">🔄 퀴즈 시작/다시 시작</button>
+      <button class="nav-btn" id="next-btn" onclick="nextQuestion()" style="display:none;">다음 문제 ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- 모둠전 -->
+<div id="team" class="category">
+
+  <!-- 1) 모둠 설정 화면 -->
+  <div class="setup-box" id="team-setup">
+    <h2>🏆 모둠전 설정</h2>
+    <p>모둠 수를 정하고, 모둠 이름을 입력하세요.</p>
+    <div>
+      모둠 수:
+      <input type="number" id="team-count" min="2" max="8" value="4" onchange="renderTeamNameInputs()">
+      <button class="big-btn" onclick="renderTeamNameInputs()" style="padding:8px 14px; font-size:13px;">모둠 수 적용</button>
+    </div>
+    <div id="team-name-inputs" style="margin-top:16px;"></div>
+    <button class="big-btn" onclick="startTeamGame()">🚀 모둠전 시작!</button>
+  </div>
+
+  <!-- 2) 게임 화면 -->
+  <div id="team-game" style="display:none;">
+    <div class="scoreboard" id="scoreboard"></div>
+
+    <div class="game-arena">
+      <div class="timer-circle" id="timer-circle">15</div>
+      <div class="arena-status status-turn" id="arena-status">준비 중...</div>
+      <div class="arena-question" id="arena-question">-</div>
+      <div class="arena-pinyin" id="arena-pinyin"></div>
+
+      <div class="arena-btn-row" id="arena-main-btns">
+        <button class="arena-btn btn-correct" onclick="markCorrect()">⭕ 정답! (+1점)</button>
+        <button class="arena-btn btn-wrong" onclick="markWrongOrTimeout()">❌ 오답/시간초과 → 스틸 기회</button>
+      </div>
+
+      <div class="steal-select" id="steal-select"></div>
+
+      <div class="arena-btn-row" id="arena-next-row" style="display:none;">
+        <button class="arena-btn btn-next" onclick="nextTeamQuestion()">다음 모둠 문제 ▶</button>
+      </div>
+    </div>
+
+    <div class="reset-row">
+      <button onclick="endTeamGame()">🔚 모둠전 종료하고 설정으로</button>
+    </div>
+  </div>
+</div>
+
+<div class="reset-row">
+  <button onclick="resetAllCounts()">🗑️ 전체 연습 기록 초기화</button>
+</div>
+
+<!-- 효과음 (오디오 요소) -->
+<audio id="sound-correct" src="ding.mp3"></audio>
+<audio id="sound-steal" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
+<audio id="sound-wrong" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+<audio id="sound-tick" src="tick.mp3"></audio>
+<audio id="sound-ding" src="https://actions.google.com/sounds/v1/cartoon/bell_ring.ogg"></audio>
+
+<script>
+// ============================================================
+// 1. 회화 데이터 (기본 표현 + 확장 리액션 표현)
+// ============================================================
+const data = {
+  traffic: {
+    title: "교통·길찾기",
+    main: [
+      {id:"t1", cn:"我想去_____。", pinyin:"Wǒ xiǎng qù _____.", kr:"저는 _____에 가고 싶어요.", speakText:"我想去那里。", hasBlank:true},
+      {id:"t2", cn:"离这儿远吗?", pinyin:"Lí zhèr yuǎn ma?", kr:"여기에서 먼가요?", speakText:"离这儿远吗?"},
+      {id:"t3", cn:"请问，网约车在哪儿上车?", pinyin:"Qǐngwèn, wǎngyuēchē zài nǎr shàngchē?", kr:"실례합니다, 앱 호출 차량은 어디서 타나요?", speakText:"请问，网约车在哪上车?"},
+      {id:"t4", cn:"卫生间在哪儿?", pinyin:"Wèishēngjiān zài nǎr?", kr:"화장실이 어디예요?", speakText:"卫生间在哪?"}
+    ],
+    extra: [
+      {cn:"太方便了!", pinyin:"Tài fāngbiàn le!", kr:"너무 편리하다!", speakText:"太方便了!"},
+      {cn:"好快啊!", pinyin:"Hǎo kuài a!", kr:"엄청 빠르다!", speakText:"好快啊!"},
+      {cn:"有点儿远。", pinyin:"Yǒudiǎnr yuǎn.", kr:"조금 머네요.", speakText:"有点远。"}
+    ]
+  },
+  food: {
+    title: "음식 주문",
+    main: [
+      {id:"f1", cn:"请给我菜单。", pinyin:"Qǐng gěi wǒ càidān.", kr:"메뉴판을 주세요.", speakText:"请给我菜单。"},
+      {id:"f2", cn:"有什么推荐的吗?", pinyin:"Yǒu shénme tuījiàn de ma?", kr:"추천할 만한 것이 있나요?", speakText:"有什么推荐的吗?"},
+      {id:"f3", cn:"我要这个。", pinyin:"Wǒ yào zhè ge.", kr:"저는 이것으로 할게요.", speakText:"我要这个。"},
+      {id:"f4", cn:"不要放香菜，谢谢。", pinyin:"Búyào fàng xiāngcài, xièxie.", kr:"고수는 넣지 말아 주세요, 감사합니다.", speakText:"不要放香菜，谢谢。"},
+      {id:"f5", cn:"买单! / 结账!", pinyin:"Mǎidān! / Jiézhàng!", kr:"계산할게요.", speakText:"买单!"}
+    ],
+    extra: [
+      {cn:"太好吃了!", pinyin:"Tài hǎochī le!", kr:"진짜 맛있다!", speakText:"太好吃了!"},
+      {cn:"好辣啊!", pinyin:"Hǎo là a!", kr:"엄청 맵다!", speakText:"好辣啊!"},
+      {cn:"有点儿甜。", pinyin:"Yǒudiǎnr tián.", kr:"조금 달아요.", speakText:"有点甜。"},
+      {cn:"真香!", pinyin:"Zhēn xiāng!", kr:"진짜 향기롭다(맛있어 보인다)!", speakText:"真香!"}
+    ]
+  },
+  shopping: {
+    title: "물건 사기",
+    main: [
+      {id:"s1", cn:"这个多少钱?", pinyin:"Zhè ge duōshao qián?", kr:"이거 얼마예요?", speakText:"这个多少钱?"},
+      {id:"s2", cn:"还有别的吗?", pinyin:"Hái yǒu bié de ma?", kr:"다른 것도 있나요?", speakText:"还有别的吗?"},
+      {id:"s3", cn:"可以便宜点儿吗?", pinyin:"Kěyǐ piányi diǎnr ma?", kr:"조금 싸게 해 주실 수 있나요?", speakText:"可以便宜点吗?"},
+      {id:"s4", cn:"可以扫码吗?", pinyin:"Kěyǐ sǎomǎ ma?", kr:"QR코드로 결제할 수 있나요?", speakText:"可以扫码吗?"}
+    ],
+    extra: [
+      {cn:"好漂亮啊!", pinyin:"Hǎo piàoliang a!", kr:"너무 예쁘다!", speakText:"好漂亮啊!"},
+      {cn:"好酷!", pinyin:"Hǎo kù!", kr:"멋있다!(힙하다)", speakText:"好酷!"},
+      {cn:"有点儿贵。", pinyin:"Yǒudiǎnr guì.", kr:"조금 비싸요.", speakText:"有点贵。"}
+    ]
+  },
+  vlog: {
+    title: "브이로그 표현",
+    main: [
+      {id:"v1", cn:"大家好！我叫_____。", pinyin:"Dàjiā hǎo! Wǒ jiào _____.", kr:"안녕하세요, 여러분! 저는 _____입니다.", speakText:"大家好！我叫小明。", hasBlank:true},
+      {id:"v2", cn:"我现在在_____。", pinyin:"Wǒ xiànzài zài _____.", kr:"저는 지금 _____에 있습니다.", speakText:"我现在在北京。", hasBlank:true},
+      {id:"v3", cn:"这里很漂亮!", pinyin:"Zhèlǐ hěn piàoliang!", kr:"여기 예뻐요!", speakText:"这里很漂亮!"},
+      {id:"v4", cn:"这个很好吃!", pinyin:"Zhè ge hěn hǎochī!", kr:"이거 맛있어요!", speakText:"这个很好吃!"},
+      {id:"v5", cn:"今天就到这里。我们下次见!", pinyin:"Jīntiān jiù dào zhèlǐ. Wǒmen xiàcì jiàn!", kr:"오늘은 여기까지. 다음에 또 만나요!", speakText:"今天就到这里。我们下次见!"}
+    ],
+    extra: [
+      {cn:"太出片了!", pinyin:"Tài chūpiàn le!", kr:"사진·영상이 정말 잘 나온다!", speakText:"太出片了!"},
+      {cn:"真的很推荐!", pinyin:"Zhēn de hěn tuījiàn!", kr:"정말 추천해요!", speakText:"真的很推荐!"},
+      {cn:"值得打卡!", pinyin:"Zhíde dǎkǎ!", kr:"인증하러 와 볼 만해요!", speakText:"值得打卡!"},
+      {cn:"绝了!", pinyin:"Jué le!", kr:"대박! / 끝내준다!", speakText:"绝了!"},
+      {cn:"好神奇啊!", pinyin:"Hǎo shénqí a!", kr:"신기하다!", speakText:"好神奇啊!"},
+      {cn:"好酷啊!", pinyin:"Hǎo kù a!", kr:"멋있다!", speakText:"好酷啊!"}
+    ]
+  }
+};
+
+// ============================================================
+// 2. 공통 - 속도 조절 / 음성 재생 / 연습 횟수
+// ============================================================
+let currentSpeed = 1;
+function setSpeed(speed, btnEl) {
+  currentSpeed = speed;
+  document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+  btnEl.classList.add('active');
+}
+
+let practiceCounts = JSON.parse(localStorage.getItem('practiceCounts') || '{}');
+function saveCounts() {
+  localStorage.setItem('practiceCounts', JSON.stringify(practiceCounts));
+  updateTotalStat();
+}
+function getCount(id) { return practiceCounts[id] || 0; }
+function incrementCount(id) {
+  practiceCounts[id] = getCount(id) + 1;
+  saveCounts();
+  const badge = document.getElementById('count-' + id);
+  if (badge) badge.innerText = `🔁 ${practiceCounts[id]}회 연습`;
+}
+function updateTotalStat() {
+  const total = Object.values(practiceCounts).reduce((a,b) => a+b, 0);
+  document.getElementById('total-stat').innerText = `전체 연습 횟수: ${total}회`;
+}
+function resetAllCounts() {
+  if (confirm("정말 모든 연습 기록을 초기화할까요?")) {
+    practiceCounts = {};
+    saveCounts();
+    renderAll();
+  }
+}
+
+function speak(text) {
+  if (!('speechSynthesis' in window)) {
+    alert('이 브라우저는 음성 재생을 지원하지 않습니다. 크롬 브라우저를 권장합니다.');
+    return;
+  }
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'zh-CN';
+  utter.rate = currentSpeed;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+}
+
+function playSound(id) {
+  const el = document.getElementById(id);
+  if (el) { el.currentTime = 0; el.play().catch(()=>{}); }
+}
+
+// ============================================================
+// 3. 카드 렌더링 (학습 탭)
+// ============================================================
+function renderCategory(key) {
+  const container = document.getElementById(key);
+  const catData = data[key];
+  let html = `<div class="progress">카드를 클릭하면 뜻이 보이고, 🔊 버튼으로 발음을 들을 수 있어요! (속도는 상단에서 조절)</div>`;
+
+  catData.main.forEach(item => {
+    const count = getCount(item.id);
+    const speakTarget = (item.speakText || item.cn).replace(/'/g, "\\'");
+    html += `
+      <div class="card" id="card-${item.id}">
+        <div class="count-badge" id="count-${item.id}">🔁 ${count}회 연습</div>
+        <div class="cn" onclick="toggleCard('${item.id}')">${item.cn}</div>
+        <div class="pinyin" onclick="toggleCard('${item.id}')">${item.pinyin}</div>
+        <div class="kr">${item.kr}</div>
+        ${item.hasBlank ? `<div class="blank-note">✏️ 빈칸에는 자신이 원하는 이름/장소를 넣어 연습하세요!</div>` : ``}
+        <div class="btn-row">
+          <button class="speak-btn" onclick="speak('${speakTarget}'); incrementCount('${item.id}')">🔊 발음 듣기</button>
+          <button class="toggle-btn" onclick="toggleCard('${item.id}')">👁️ 뜻 보기/숨기기</button>
+        </div>
+        <div class="extra-box">
+          <div class="extra-title">✨ 확장 리액션 표현 (이 상황에서 써보기)</div>
+          ${catData.extra.map(ex => {
+            const exSpeak = (ex.speakText || ex.cn).replace(/'/g, "\\'");
+            return `
+            <div class="extra-item">
+              <span class="ex-text">${ex.cn} <span class="ex-pinyin">${ex.pinyin} - ${ex.kr}</span></span>
+              <button onclick="speak('${exSpeak}')">🔊</button>
+            </div>
+          `}).join('')}
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+function toggleCard(id) {
+  const card = document.getElementById('card-' + id);
+  card.classList.toggle('show');
+  if (card.classList.contains('show')) incrementCount(id);
+}
+
+function renderAll() {
+  Object.keys(data).forEach(key => renderCategory(key));
+  updateTotalStat();
+}
+
+function showTab(id) {
+  document.querySelectorAll('.category').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ============================================================
+// 4. 개인 퀴즈 (기본 표현만, 4지선다)
+// ============================================================
+let quizData = [];
+let currentIndex = 0;
+let correctCount = 0;
+let totalCount = 0;
+let answered = false;
+
+function getAllMainSentences() {
+  let all = [];
+  Object.values(data).forEach(cat => {
+    cat.main.forEach(item => {
+      all.push({
+        id: item.id, cn: item.cn, pinyin: item.pinyin,
+        krDisplay: item.hasBlank ? "각자의 표현 넣기" : item.kr
+      });
+    });
+  });
+  return all;
+}
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+function initQuiz() {
+  quizData = shuffle(getAllMainSentences());
+  currentIndex = 0; correctCount = 0; totalCount = 0;
+  document.getElementById('next-btn').style.display = "none";
+  showQuestion();
+}
+
+function showQuestion() {
+  answered = false;
+  document.getElementById('next-btn').style.display = "none";
+  document.getElementById('quiz-result').innerText = "";
+
+  if (currentIndex >= quizData.length) {
+    document.getElementById('quiz-question').innerText = "🎉 모든 문제를 다 풀었어요!";
+    document.getElementById('quiz-pinyin').innerText = "";
+    document.getElementById('quiz-options').innerHTML = "";
+    return;
+  }
+
+  const q = quizData[currentIndex];
+  document.getElementById('quiz-question').innerText = q.cn;
+  document.getElementById('quiz-pinyin').innerText = q.pinyin;
+
+  const others = quizData.filter(item => item.id !== q.id && item.krDisplay !== q.krDisplay);
+  const wrongChoices = shuffle(others).slice(0, 3).map(item => item.krDisplay);
+  const options = shuffle([q.krDisplay, ...wrongChoices]);
+
+  document.getElementById('quiz-options').innerHTML = options.map(opt => `
+    <button class="option-btn" onclick="selectOption(this, '${opt.replace(/'/g, "\\'")}', '${q.krDisplay.replace(/'/g, "\\'")}', '${q.id}')">${opt}</button>
+  `).join('');
+}
+
+function selectOption(btnEl, selected, correctAnswer, qId) {
+  if (answered) return;
+  answered = true;
+  totalCount++;
+  incrementCount(qId);
+
+  document.querySelectorAll('.option-btn').forEach(b => {
+    b.classList.add('disabled');
+    if (b.innerText === correctAnswer) b.classList.add('correct');
+  });
+
+  if (selected === correctAnswer) {
+    correctCount++;
+    btnEl.classList.add('correct');
+    document.getElementById('quiz-result').innerHTML = `<span class="correct-text">✅ 정답입니다!</span>`;
+  } else {
+    btnEl.classList.add('wrong');
+    document.getElementById('quiz-result').innerHTML = `<span class="wrong-text">❌ 오답! 정답은 "${correctAnswer}" 입니다.</span>`;
+  }
+  document.getElementById('quiz-score').innerText = `맞춘 개수: ${correctCount} / ${totalCount}`;
+  document.getElementById('next-btn').style.display = "inline-block";
+}
+
+function nextQuestion() { currentIndex++; showQuestion(); }
+
+// ============================================================
+// 5. 모둠전 (턴제 + 스틸 + 타이머 + 효과음/애니메이션)
+// ============================================================
+const TEAM_COLORS = ["#4caf7d","#2b7fd1","#d1495b","#ffb703","#8e44ad","#16a085","#e67e22","#34495e"];
+let teams = [];
+let teamTurnIndex = 0;
+let teamQuizPool = [];
+let teamCurrentQ = null;
+let timerInterval = null;
+let timeLeft = 15;
+const TIME_LIMIT = 30;
+
+function renderTeamNameInputs() {
+  const count = parseInt(document.getElementById('team-count').value) || 4;
+  let html = "";
+  for (let i = 0; i < count; i++) {
+    html += `
+      <div class="team-name-row">
+        <span class="team-color-dot" style="background:${TEAM_COLORS[i % TEAM_COLORS.length]}"></span>
+        <input type="text" id="team-name-${i}" placeholder="모둠 ${i+1} 이름 입력" value="모둠 ${i+1}">
+      </div>
+    `;
+  }
+  document.getElementById('team-name-inputs').innerHTML = html;
+}
+renderTeamNameInputs();
+
+function startTeamGame() {
+  const count = parseInt(document.getElementById('team-count').value) || 4;
+  teams = [];
+  for (let i = 0; i < count; i++) {
+    const nameInput = document.getElementById(`team-name-${i}`);
+    const name = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : `모둠 ${i+1}`;
+    teams.push({ name, score: 0, color: TEAM_COLORS[i % TEAM_COLORS.length] });
+  }
+  teamTurnIndex = 0;
+  teamQuizPool = shuffle(getAllMainSentences());
+  document.getElementById('team-setup').style.display = "none";
+  document.getElementById('team-game').style.display = "block";
+  renderScoreboard();
+  loadNextTeamQuestion(true);
+}
+
+function endTeamGame() {
+  clearInterval(timerInterval);
+  stopTickSound();
+  document.getElementById('team-setup').style.display = "block";
+  document.getElementById('team-game').style.display = "none";
+}
+
+function renderScoreboard(popIndex = -1) {
+  const board = document.getElementById('scoreboard');
+  board.innerHTML = teams.map((t, i) => `
+    <div class="team-card ${i === teamTurnIndex ? 'turn' : ''} ${i === popIndex ? 'pop' : ''}" style="border-top-color:${t.color}">
+      <div class="t-name">${t.name}</div>
+      <div class="t-score">${t.score}</div>
+      ${i === teamTurnIndex ? `<div class="turn-badge">🎯 이번 턴</div>` : ``}
+    </div>
+  `).join('');
+}
+
+function loadNextTeamQuestion(isFirst = false) {
+  stopTickSound(); // ★ 다음 문제로 넘어갈 때 틱소리 확실히 정지
+  if (teamQuizPool.length === 0) teamQuizPool = shuffle(getAllMainSentences());
+  teamCurrentQ = teamQuizPool.shift();
+  document.getElementById('arena-question').innerText = teamCurrentQ.cn;
+  document.getElementById('arena-pinyin').innerText = teamCurrentQ.pinyin;
+  document.getElementById('arena-status').innerHTML =
+    `<span class="status-turn">🎯 ${teams[teamTurnIndex].name} 차례입니다!</span>` +
+    (teamCurrentQ.krDisplay === "각자의 표현 넣기" ? `<span style="color:#999; font-weight:normal;">(빈칸 문장: 각자의 표현으로 바꿔 말해도 정답 처리!)</span>` : "");
+  document.getElementById('arena-main-btns').style.display = "flex";
+  document.getElementById('steal-select').style.display = "none";
+  document.getElementById('steal-select').innerHTML = "";
+  document.getElementById('arena-next-row').style.display = "none";
+  renderScoreboard();
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  stopTickSound(); // ★ 새 타이머 시작 시 이전 틱소리 정지
+  timeLeft = TIME_LIMIT;
+  const circle = document.getElementById('timer-circle');
+  circle.innerText = timeLeft;
+  circle.classList.remove('warning');
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    circle.innerText = timeLeft;
+    if (timeLeft <= 10 && timeLeft > 0) {
+      circle.classList.add('warning');
+      playTickSound();
+    }
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      stopTickSound(); // ★ 시간초과 시 정지
+      markWrongOrTimeout(true);
+    }
+  }, 1000);
+}
+
+// ★ 틱 전용 재생 함수 (겹침 방지)
+function playTickSound() {
+  const el = document.getElementById('sound-tick');
+  if (!el) return;
+  el.pause();
+  el.currentTime = 0;
+  el.play().catch(()=>{});
+}
+
+// ★ 틱 사운드 정지 전용 함수
+function stopTickSound() {
+  const el = document.getElementById('sound-tick');
+  if (el) {
+    el.pause();
+    el.currentTime = 0;
+  }
+}
+
+// 정답 처리
+function markCorrect() {
+  clearInterval(timerInterval);
+  stopTickSound(); // ★ 혹시 남아있는 틱소리 정지
+  teams[teamTurnIndex].score += 1;
+  playSound('sound-correct'); // ★ ding.mp3가 실제 연결된 id로 수정!
+  renderScoreboard(teamTurnIndex);
+  document.getElementById('arena-status').innerHTML = `<span class="status-turn">🎉 ${teams[teamTurnIndex].name} 정답! +1점</span>`;
+  document.getElementById('arena-main-btns').style.display = "none";
+  document.getElementById('arena-next-row').style.display = "flex";
+  teamTurnIndex = (teamTurnIndex + 1) % teams.length;
+}
+
+// 오답/시간초과 → 스틸 기회 오픈
+function markWrongOrTimeout(isTimeout = false) {
+  clearInterval(timerInterval);
+  stopTickSound(); // ★ 추가
+  playSound('sound-wrong');
+  document.getElementById('arena-status').innerHTML =
+    `<span class="status-steal">${isTimeout ? "⏰ 시간 초과!" : "❌ 오답!"} 다른 모둠 스틸 찬스!</span>`;
+  document.getElementById('arena-main-btns').style.display = "none";
+  const stealBox = document.getElementById('steal-select');
+  stealBox.style.display = "flex";
+  stealBox.innerHTML = teams.map((t, i) => {
+    if (i === teamTurnIndex) return "";
+    return `<button style="border-color:${t.color}" onclick="stealSuccess(${i})">🙋 ${t.name} 스틸 성공!</button>`;
+  }).join('') + `<button style="border-color:#aaa; background:#eee;" onclick="stealFail()">😥 아무도 못 맞힘 (턴 넘기기)</button>`;
+}
+
+function stealSuccess(index) {
+  teams[index].score += 1;
+  playSound('sound-steal');
+  renderScoreboard(index);
+  document.getElementById('arena-status').innerHTML = `<span class="status-steal">🏆 ${teams[index].name} 스틸 성공! +1점</span>`;
+  document.getElementById('steal-select').style.display = "none";
+  document.getElementById('arena-next-row').style.display = "flex";
+  teamTurnIndex = (teamTurnIndex + 1) % teams.length;
+}
+
+function stealFail() {
+  document.getElementById('arena-status').innerHTML = `<span class="status-steal">😅 아무도 못 맞혔어요. 다음 모둠으로 턴이 넘어갑니다.</span>`;
+  document.getElementById('steal-select').style.display = "none";
+  document.getElementById('arena-next-row').style.display = "flex";
+  teamTurnIndex = (teamTurnIndex + 1) % teams.length;
+}
+
+function nextTeamQuestion() {
+  loadNextTeamQuestion();
+}
+
+// ============================================================
+// 초기 실행
+// ============================================================
+renderAll();
+</script>
+
+</body>
+</html>
